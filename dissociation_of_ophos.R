@@ -1,5 +1,7 @@
 ####Berechnung des Dissoziationsdiagramm auf Basis der Konzentrationen
 #Gleichgewichtskonstanten:
+
+source("rotation_fun.R")
 pk1 <- 2.16
 pk2 <- 7.21
 pk3 <- 12.32
@@ -7,6 +9,7 @@ pk3 <- 12.32
 pH <- seq(3, 14, 0.2)
 h <- 10 ^ (-pH) 
 K1 <- 10 ^ (-pk1)
+
 K2 <- 10 ^ (-pk2)
 K3 <- 10 ^ (-pk3)
 
@@ -29,12 +32,33 @@ legend("topright", c(expression("H"["3"]*"PO"["4"]), expression("H"["2"]*"PO"["4
 #Funktion des gelösten Phosphatgehaltes im Gelichgewicht mit Hydroxylapatit###########
 #bei gegeben pH und ca+ aktivität in mol/l
 ###
+#Temperaturabhängigkeit nach McDowell et.al
+#log Ks = -8219.41/Temperatur - 1.6657 - 0.098215 * Temperatur
+Ks_temp <- function(temp_P){
+  temp_P <- 273.15 + temp_P #Grad Celsius in Kelvin umrechenen
+  temp_erg <- -8219.41 / temp_P - 1.6657 - 0.098215 * temp_P
+  return(temp_erg)
+}
+temp_beisp <- seq(0, 40, 1)
+plot(temp_beisp, Ks_temp(temp_beisp))
 #Idee: Löslichkeitsprodukt (Ksp) formolieren aus der Gleichgewichtsreaktion von Hydroxylapatit (Ca5(PO4)3OH + 7 H+ <-> 5 Ca2+ + 3H2PO4- + H2O); Ksp = a5 Ca2+ * a3 H2PO4- / a7 H+ (a = aktivität)
 #Nach umformen und einsetzen von Ksp = 14.46 ->
 #log(aH2PO4-) = 1/3 (14.46 - 7 *pH - 5 log aCa2+)
-HPO2 <- function(ph, gammaca = 0.0025){
-  erg <- 1/3 * (14.46 - 5 * log10(gammaca) - (7 * ph))
-  erg <- 10^(erg) * 30.973762 #Umrechung von Mol/l zu Gramm/l
+co2pa_ca(pco02=0.0303975082, temp=25)
+
+ca2(0.0303975082, 25, 8.31753683, 0.84540208)
+erg1 <- HPO2(8.31753683,0.0005018758)
+
+p <- co2pa_ca(pco02=0.3039750821, temp=25)
+p1 <- ca2(0.3039750821, 25, 7.6659114, p[1])
+erg2 <- HPO2(7.6659114,p1)
+erg1-erg2
+log10(erg2-erg1)
+5/3
+
+HPO2 <- function(ph, gammaca = 0.0025, temp_P = 20){
+  erg <- 1/3 * (14.46 - (5 * log10(gammaca)) - (7 * ph))
+  erg <- 10 ^ erg  * 30.973762 #Umrechung von Mol/l zu Gramm/l
   return(erg *1000) #In Miligramm *1000
 }
 ##

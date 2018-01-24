@@ -122,7 +122,7 @@ co2pa_ca(pco02=0.3, temp=10)#0.7729347 0.9341701 0.9407609 0.9353685
 #Wir haben 6 unbekannte Spezies, wir kennen PCO2 und kennen 7 Zusammenh?nge-----
 #Gleichungen -> versuchen zu l?sen
 pH_ca_fun <- function(ph, temp1){#Funktion braucht Patialdurck und Temperatur
-  ga <- rep(1,6) #Gamma anfangs immer auf 1 und PH auf 7
+  ga <- rep(1,6) #Gamma anfangs immer auf 1 und Patialdruck auf 2.5
   pco02 <- 2.5
   repeat{
     pco02_1 <- pco02
