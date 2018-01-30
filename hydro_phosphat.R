@@ -18,14 +18,7 @@ temp_beisp <- seq(0, 40, 1)
 plot(temp_beisp, Ks_temp(temp_beisp), ylab="pKs Wert", xlab="Temperatur in C")
 
 #Rotationsmatrix
-matx <- matrix(1:12, 3, 4)
-matx[3,2] <- 19
-matx
-image(matx)
 rotate <- function(x) t(apply(x, 2, rev))
-imag <- function(m){
-  imag
-}
-image(rotate(matx))
+
 #Lösungsgleichgewicht errechenen von Hydrogenphosphat:
 #Funktion der Spezies in Abhängigkeit von der Aktivität, Temperatur und Anfangskonzentration von CaHPO4 

@@ -1,7 +1,41 @@
+#Funktion für die Berechnung der Phosphorkonzentration in Abhängigkeit von der ca-Aktivität und dem pH-Wert (Gleichgewicht mit Hydroxylapatit)
+
+#Rotationsmatrix
+rotate <- function(x) t(apply(x, 2, rev))
+
+#Idee: Löslichkeitsprodukt (Ksp) formolieren aus der Gleichgewichtsreaktion von Hydroxylapatit (Ca5(PO4)3OH + 7 H+ <-> 5 Ca2+ + 3H2PO4- + H2O); Ksp = a5 Ca2+ * a3 H2PO4- / a7 H+ (a = aktivität)
+#Nach umformen und einsetzen von Ksp = 14.46 ->
+#log(aH2PO4-) = 1/3 (14.46 - 7 *pH - 5 log aCa2+)
+HPO2 <- function(ph, gammaca = 0.0025, temp_P = 20, g=T){
+  erg <- 1/3 * (14.46 - (5 * log10(gammaca)) - (7 * ph))
+  erg <- 10 ^ erg   #Umrechung von Mol/l zu Gramm/l
+  ifelse(g == T, return(erg* 30.973762 * 1000), return(erg)) #In Miligramm *1000
+}
+##Funktion für Hpo2-4
+HPO24 <- function(ph, gammaca = 0.0025, g= T){
+  erg3 <- (1/3 * -7.21) - (5/3 * log10(gammaca)) - (4/3 * ph)
+  erg3 <- 10 ^ erg3
+  ifelse(g ==T, return(erg3 * 30.973762 *1000), return(erg3))
+}
+
+#Berechnung der Anteile der Phosphatspezies in Abhängigkeit des pH-Wertes
+parts <- function(K){
+  K <- 10 ^ (-K)
+  H3 <- K^3 + (K^2 * K1) + (K * K1 * K2) + (K1 * K2 * K3)
+  P1 <- K^3 * K1/H3
+  P2 <- K^2 * K1 / H3
+  P3 <- K * K1 * K2/H3
+  P4 <- K1 * K2 * K3 / H3
+  PF <- c(P1, P2, P3, P4)
+  names(PF) <- c("H3PO4", "H2PO4", "HPO24", "PO34")
+  return(PF)
+}
+#Umrechnen von kPA zu atm
 kpa_fun <- function(kpa){
   kpa/101.3
 }
 
+#Temperatur Abhängigkeit der Lösung von CO2 im Wasser
 #Für die Temperatur wird der Wert temp1 eingegeben, welcher dann über die Funktion verändert werden kann.
 #Carroll Funktiton------------------
 carl <- function(temp=temp1){
@@ -44,7 +78,7 @@ oh <- function(pco02, temp1, ph, ga){
   patial_co26 <- (10^-14)/((10^-ph)*ga)
   return(patial_co26)
 }
-#Elektroneutralit?tsformel als Funktion (Dividiert durch die jeweiligen Aktivit?tskoeffizienten usw.)------------------
+#Elektroneutralitätsformel als Funktion (Dividiert durch die jeweiligen Aktivit?tskoeffizienten usw.)
 sumCA <- function(pco02, temp1, ph, ga){
   sumCAer <- (2*ca2(pco02=pco02, temp1=temp1, ph=ph, ga=ga[1]))+
     cahco3(pco02=pco02, temp1=temp1, ph=ph, ga=ga[2])+
@@ -59,7 +93,7 @@ ga <- rep(1, 6)#Gamma wird als Vektor ?bergeben
 sumCA(pco02=1, temp=20, ph=7, ga=ga) #0.008107546
 
 #Ionenst?rke errechen um neuen  Aktivit?tskoeffizienten Gamma zu bekommen--------
-#Tempereaturabhängigkeit errechen mit folgender Funktion:
+#1. Tempereaturabhängigkeit der Parameter A und B errechen mit folgender Funktion:
 temp_A <- function(Ax){
   par_a <- c(0.4883, 0.5002, 0.5046, 0.5092, 0.5141, 0.5241, 0.5351, 0.5471, 0.5739)
   par_temp <- c(0,15,20,25,30,40,50,60,80)
@@ -74,7 +108,7 @@ fmb <- lm(par_b ~ par_temp)
 B_ret <- fmb$coefficients[2]*Bx + fmb$coefficients[1]
 return(B_ret)
 }
-
+#2.Funktion der Ionenstärke 
 phmu<-function(pco02=pco02, temp1=temp1, ph=ph, ga=ga){
   #Ionenstärke mu 
   mu <- 0.5*(ca2(pco02=pco02, temp1=temp1, ph=ph,ga=ga[1])*
@@ -96,6 +130,7 @@ phmu<-function(pco02=pco02, temp1=temp1, ph=ph, ga=ga){
   return(ga) 
 }
 
+#Gleichgewicht lösen mit der Temperatur als Variable und dem pH (pH_ca_fun) bzw. dem CO2 Patialdruck (co2pa_ca)
 #Wir haben 6 unbekannte Spezies, wir kennen PCO2 und kennen 7 Zusammenh?nge-----
 #Gleichungen -> versuchen zu l?sen
 co2pa_ca <- function(pco02, temp1){#Funktion braucht Patialdurck und Temperatur
