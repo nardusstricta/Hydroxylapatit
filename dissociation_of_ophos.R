@@ -101,7 +101,7 @@ mat_erg <- rotate(mat_erg) # rotation der Matrix
 filled.contour(pH_beispiel, ca_beispiel,   log10(mat_erg), ylab=expression("Ca"^"2+"*"Aktivität in mol l"^"-1"), xlab=("pH-Wert"), main  = "Phosphor in Lösung log(mg/l)", color = terrain.colors)
 
 #Phosphorgehalt Abhängig von der CO2 Konzentration############
-CO2_PD <- seq(0.1, 5, 0.1) #CO2 Patialdrücke  in kPA
+CO2_PD <- seq(0.1, 5, 0.01) #CO2 Patialdrücke  in kPA
 ph_co2 <- as.data.frame(matrix(0,length(CO2_PD),8)) # Matrix für die Aktivitäten von Ca2+ und den dazugehörigen pH-Wert
 colnames(ph_co2) <- c("ca2", "CaHCO", "H", "HCO3", "CO2", "OH", "PH", "paco2")
 
@@ -158,6 +158,9 @@ for(j in 1:length(temp_beispiel)){
         }
       mat_res[,j] <- HPO2(ph = carb_pH, gammaca = mat_calcit[,j])
 }
+colnames(mat_calcit) <- temp_beispiel
+rownames(mat_calcit) <- ph_co2_3$PH
+write_csv(as.data.frame(mat_calcit), "calcit_ph_temp")
 plot(temp_beispiel, mat_calcit[1,], xlab = "Temperatur", ylab = "Ca Aktität")
 matplot(carb_pH, log10(mat_res), type ="l")
 phos_2_pH <- HPO2(ph = carb_pH, gammaca = cacons_2)

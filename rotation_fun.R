@@ -116,7 +116,7 @@ co2pa_ca <- function(pco02, temp1){#Funktion braucht Patialdurck und Temperatur
           ph <- ph - Int}
       }
     }
-    if(abs(ph1-ph)<1/1000){#f?r schnellere Durchl?ufe reichen auch 1000
+    if(abs(ph1-ph)<1/10000){#f?r schnellere Durchl?ufe reichen auch 1000
       return(c(ga,ph, pco02)) #Bevor auch die zweite repeat Schleife
       #abricht werden 6*Gammas, PH, und der CO2-Patialdruck ausgeben
       break
