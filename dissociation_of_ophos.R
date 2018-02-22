@@ -1,7 +1,7 @@
 #1. Beispiele für die Abhängigkeit des Phosporgehaltes von pH und Ca2-Aktivität in der Bodenlösung
 #2. Berechnung der Ca+ Aktivität in dem pH-Bereich, welcher vom CO2 Patialdruck bestimmt wird, mit unterschiedlchen Temperaturen. 
 
-source("rotation_fun.R") #Laden des Calciums-Modell und der benötigten Funktionen für die P-Konzentration 
+source("functions.R") #Laden des Calciums-Modell und der benötigten Funktionen für die P-Konzentration 
 
 
 ##

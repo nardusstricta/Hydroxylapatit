@@ -2,7 +2,7 @@
 #gemessene Phosphatwerte Modellieren####
 ##
 
-source("rotation_fun.R") #Laden des Calciums-Modell und der benötigten Funktionen für die P-Konzentration 
+source("functions.R") #Laden des Calciums-Modell und der benötigten Funktionen für die P-Konzentration 
 source("dissociation_of_ophos.R") #Laden der Funktion die bei gegebendem Ca-Wert den pH- und Co2 Patialdruck vorhersagt
 
 
@@ -150,5 +150,4 @@ pp1 <- ggplot(melt_var, aes(x=pH, y=P_comp))+
   labs(x = "pH", y = expression("log HPO"[4]*"- bzw. H2PO"[4]^"2-"* "   [mol l "^"-1"*"]"))
 pp1
 dev.off()
-
 
